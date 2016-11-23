@@ -142,15 +142,15 @@ runConcurrent iterations = do
 ```haskell
 runPar :: Int -> Result
 runPar iterations =
-  parFold $ fmap (play . mkStdGen) [1..iterations]
+  parFoldMap (play . mkStdGen) [1..iterations]
 
-parFold :: Monoid a => [a] -> a
-parFold [] = mempty
-parFold [x] = x
-parFold xs = (ys `par` zs) `pseq` (ys <> zs)
+parFoldMap :: Monoid b => (a -> b) -> [a] -> b
+parFoldMap f [] = mempty
+parFoldMap f [x] = f x
+parFoldMap f xs = (ys `par` zs) `pseq` (ys <> zs)
   where (ys', zs') = splitAt (length xs `div` 2) xs
-        ys = parFold ys'
-        zs = parFold zs'
+        ys = parFoldMap f ys'
+        zs = parFoldMap f zs'
 ```
 
 

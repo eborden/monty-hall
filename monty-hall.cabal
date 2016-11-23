@@ -17,7 +17,6 @@ executable monty-hall-exe
   main-is:             MontyHall.lhs
   ghc-options: -pgmL markdown-unlit
                -threaded -rtsopts
-               -with-rtsopts=-T
                -with-rtsopts=-N
   build-depends:       base
                      , async
