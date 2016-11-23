@@ -31,7 +31,10 @@ data Option = Door1 | Door2 | Door3
 
 data Doors = Doors !Prize !Prize !Prize
 
-data Result = Result !Int !Int
+type Stay = Int
+type Swap = Int
+
+data Result = Result !Stay !Swap
   deriving (Show)
 
 instance Monoid Result where
