@@ -119,7 +119,7 @@ runFold iterations = do
 
 
 
-### Synchronous Execution with simulated rand
+### Synchronous Execution with Simulated Rand
 ```haskell
 runSeed :: Int -> Result
 runSeed iterations = foldl' play' mempty [1..iterations]
@@ -138,7 +138,7 @@ runConcurrent iterations = do
 
 
 
-### Parallel execution with lists
+### Parallel Execution
 ```haskell
 runPar :: Int -> Result
 runPar iterations =
@@ -155,7 +155,7 @@ parFold xs = (ys `par` zs) `pseq` (ys <> zs)
 
 
 
-### Parallel execution with vectors
+### Parallel Execution with Vectors
 ```haskell
 runParVector :: Int -> Result
 runParVector iterations =
