@@ -1,0 +1,32 @@
+name:                monty-hall
+version:             0.1.0.0
+synopsis:            An exploration of concurrency through monty hall
+description:         Please see README.md
+homepage:            https://github.com/eborden/monty-hall#readme
+license:             BSD3
+license-file:        LICENSE
+author:              Evan Rutledge Borden
+maintainer:          evan@evan-borden.com
+copyright:           2016 Evan Rutledge Borden
+category:            Web
+build-type:          Simple
+-- extra-source-files:
+cabal-version:       >=1.10
+
+executable monty-hall-exe
+  main-is:             MontyHall.lhs
+  ghc-options: -pgmL markdown-unlit
+               -threaded -rtsopts
+               -with-rtsopts=-T
+               -with-rtsopts=-N
+  build-depends:       base
+                     , async
+                     , criterion
+                     , deepseq
+                     , markdown-unlit
+                     , mtl
+                     , parallel
+                     , random
+                     , vector
+                     , weigh
+  default-language:    Haskell2010
