@@ -16,6 +16,7 @@ cabal-version:       >=1.10
 executable monty-hall-exe
   main-is:             MontyHall.lhs
   ghc-options: -pgmL markdown-unlit
+               -O
                -threaded -rtsopts
                -with-rtsopts=-N
   build-depends:       base
