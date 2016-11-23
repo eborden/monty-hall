@@ -104,8 +104,46 @@ takeRand gen xs =
 
 
 
-### Parallel Folds
+### Synchronous Execution
 ```haskell
+play :: StdGen -> Result
+play = execWriter . playAlgo
+
+runFold :: Int -> IO Result
+runFold iterations = do
+  gen <- getStdGen
+  pure . snd $ foldl' play' (gen, mempty) [1..iterations]
+  where
+    play' (gen, !acc) _ = fmap (<> acc) . runWriter $ playAlgo gen
+```
+
+
+
+### Synchronous Execution with simulated rand
+```haskell
+runSeed :: Int -> Result
+runSeed iterations = foldl' play' mempty [1..iterations]
+  where
+    play' acc i = (<> acc) . play $ mkStdGen i
+```
+
+
+
+### Concurrent Execution
+```haskell
+runConcurrent :: Int -> IO Result
+runConcurrent iterations = do
+  fmap fold $ mapConcurrently (pure . play . mkStdGen) [1..iterations]
+```
+
+
+
+### Parallel execution with lists
+```haskell
+runPar :: Int -> Result
+runPar iterations =
+  parFold $ fmap (play . mkStdGen) [1..iterations]
+
 parFold :: Monoid a => [a] -> a
 parFold [] = mempty
 parFold [x] = x
@@ -113,6 +151,15 @@ parFold xs = (ys `par` zs) `pseq` (ys <> zs)
   where (ys', zs') = splitAt (length xs `div` 2) xs
         ys = parFold ys'
         zs = parFold zs'
+```
+
+
+
+### Parallel execution with vectors
+```haskell
+runParVector :: Int -> Result
+runParVector iterations =
+  vparFoldMap (play . mkStdGen) $ U.enumFromN 1 iterations
 
 vparFoldMap :: (G.Vector v a, Monoid b) => (a -> b) -> v a -> b
 vparFoldMap f xs
@@ -127,43 +174,11 @@ vparFoldMap f xs
 
 
 
-### Various Execution Strategies
-```haskell
-play :: StdGen -> Result
-play = execWriter . playAlgo
-
-runFold :: Int -> IO Result
-runFold iterations = do
-  gen <- getStdGen
-  pure . snd $ foldl' play' (gen, mempty) [1..iterations]
-  where
-    play' (gen, !acc) _ = fmap (<> acc) . runWriter $ playAlgo gen
-
-runSeed :: Int -> Result
-runSeed iterations = foldl' play' mempty [1..iterations]
-  where
-    play' acc i = (<> acc) . play $ mkStdGen i
-
-runConcurrent :: Int -> IO Result
-runConcurrent iterations = do
-  fmap fold $ mapConcurrently (pure . play . mkStdGen) [1..iterations]
-
-runPar :: Int -> Result
-runPar iterations =
-  parFold $ fmap (play . mkStdGen) [1..iterations]
-
-runParVector :: Int -> Result
-runParVector iterations =
-  vparFoldMap (play . mkStdGen) $ U.enumFromN 1 iterations
-
-percentize :: Int -> Int -> String
-percentize t x = show (fromIntegral x / (fromIntegral t) * 100) <> "%"
-```
-
-
-
 ### Making it Runnable
 ```haskell
+percentize :: Int -> Int -> String
+percentize t x = show (fromIntegral x / (fromIntegral t) * 100) <> "%"
+
 main :: IO ()
 main = do
 
